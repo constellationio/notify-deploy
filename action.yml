@@ -1,0 +1,14 @@
+name: "Constellation Notify Deploy"
+description: "Send deployment events to Constellation"
+
+inputs:
+  service:
+    description: "Service name"
+    required: true
+  environment:
+    description: "Environment (prod, staging, dev)"
+    required: true
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
