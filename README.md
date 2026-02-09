@@ -83,44 +83,40 @@ deploy:
        api-key: ${{ secrets.CONSTELLATION_API_KEY }}
        service: payments
        environment: production
+```
 
-
-That’s it 🎉
+### That’s it 🎉
 **Your deployment is now visible in Constellation**
 
-🌍 Multi-Environment Example
+## 🌍 Multi-Environment Example
+```yaml
 - name: Notify Constellation
   uses: constellationio/notify-deploy@v1
   with:
     api-key: ${{ secrets.CONSTELLATION_API_KEY }}
     service: user-service
     environment: staging
+```
 
-
-🧠 How It Works
-
+## 🧠 How It Works
 The action automatically collects:
 
-Repository name
-
-Commit SHA
-
-Branch
-
-Workflow run ID
-
-Actor (who triggered the workflow)
+- Repository name
+- Commit SHA
+- Branch
+- Workflow run ID
+- Actor (who triggered the workflow)
 
 This metadata is sent to the Constellation Deploy API along with the service and environment you provide.
 
-No SDKs. No config files. No code changes.
+### No SDKs. No config files. No code changes.
 
-❌ Failure Behavior
+## ❌ Failure Behavior
 
-Missing required inputs → ❌ Action fails
+- Missing required inputs → ❌ Action fails
 
-API unreachable → ❌ Action fails
+- API unreachable → ❌ Action fails
 
-Clear error logs are printed to GitHub Actions output
+- Clear error logs are printed to GitHub Actions output
 
-This ensures deployment visibility is never silently skipped.
+- This ensures deployment visibility is never silently skipped.
