@@ -6,7 +6,7 @@ import { CONSTELLATION_HOST } from "./consts.js";
 async function run() {
     try {
         // User-provided inputs
-        const service = core.getInput("service", { required: true });
+        const serviceId = core.getInput("serviceId", { required: true });
         const environment = core.getInput("environment", { required: true });
 
         // Secrets / env
@@ -21,12 +21,12 @@ async function run() {
         const ctx = github.context;
 
         const payload = {
-            serviceId: service,
+            serviceId: serviceId,
             environment,
             type: "DEPLOYMENT",
             severity: "INFO",
             status: "SUCCESS",
-            message: `Deployed ${service} to ${environment}`,
+            message: `Deployed ${serviceId} to ${environment}`,
             source: "github-actions",
             timestamp: new Date().toISOString(),
             metadata: {
@@ -40,7 +40,7 @@ async function run() {
             }
         };
 
-        core.info(`Sending deployment event for ${service} (${environment})`);
+        core.info(`Sending deployment event for ${serviceId} (${environment})`);
 
         const response = await fetch(`${apiUrl}/api/v1/events`, {
             method: "POST",
