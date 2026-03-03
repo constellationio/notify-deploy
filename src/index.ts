@@ -21,10 +21,12 @@ async function run() {
         const ctx = github.context;
 
         const payload = {
-            service,
+            serviceId: service,
             environment,
             type: "DEPLOYMENT",
+            severity: "INFO",
             status: "SUCCESS",
+            message: `Deployed ${service} to ${environment}`,
             source: "github-actions",
             timestamp: new Date().toISOString(),
             metadata: {
