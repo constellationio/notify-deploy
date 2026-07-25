@@ -38,10 +38,15 @@ Everything else is auto-detected from GitHub Actions.
 
 | Name | Required | Description |
 |-----|--------|-------------|
-| `api-key` | ✅ Yes | Constellation API key (use GitHub Secrets) |
-| `service` | ✅ Yes | Logical service name (e.g. `payments`, `auth-api`) |
+| `service` | ✅ Yes | Logical service **name** as registered in Constellation (e.g. `payments`, `auth-api`) |
 | `environment` | ✅ Yes | Deployment environment (e.g. `production`, `staging`) |
+| `status` | ❌ No | Deployment outcome. Defaults to `success`; pass `${{ job.status }}` with `if: always()` to report failures too |
 | `api-url` | ❌ No | Constellation API base URL (defaults to hosted API) |
+
+> **Authentication is via an environment variable, not an input.** Set
+> `CONSTELLATION_API_KEY` to your **project's** API key (`cstl_live_sk_…`, found
+> under *Settings → Project API Keys*). The key identifies the project, and the
+> service is resolved by `service` + `environment` within it.
 
 ---
 
@@ -78,11 +83,14 @@ deploy:
      run: echo "Deploying service..."
 
    - name: Notify Constellation
-     uses: constellationio/notify-deploy@v1
+     if: always()
+     uses: constellationio/notify-deploy@v3
      with:
-       api-key: ${{ secrets.CONSTELLATION_API_KEY }}
        service: payments
        environment: production
+       status: ${{ job.status }}
+     env:
+       CONSTELLATION_API_KEY: ${{ secrets.CONSTELLATION_API_KEY }}
 ```
 
 ### That’s it 🎉
@@ -91,11 +99,12 @@ deploy:
 ## 🌍 Multi-Environment Example
 ```yaml
 - name: Notify Constellation
-  uses: constellationio/notify-deploy@v1
+  uses: constellationio/notify-deploy@v3
   with:
-    api-key: ${{ secrets.CONSTELLATION_API_KEY }}
     service: user-service
     environment: staging
+  env:
+    CONSTELLATION_API_KEY: ${{ secrets.CONSTELLATION_API_KEY }}
 ```
 
 ## 🧠 How It Works

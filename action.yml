@@ -3,11 +3,18 @@ description: "Send deployment events to Constellation"
 
 inputs:
   service:
-    description: "Service name"
+    description: "Logical service name as registered in Constellation (e.g. payments)"
     required: true
   environment:
-    description: "Environment (prod, staging, dev)"
+    description: "Environment (production, staging, dev)"
     required: true
+  status:
+    description: "Deployment outcome. Pass ${{ job.status }} with if: always() to report failures."
+    required: false
+    default: "success"
+  api-url:
+    description: "Constellation base URL (defaults to the hosted API)"
+    required: false
 
 runs:
   using: "node20"

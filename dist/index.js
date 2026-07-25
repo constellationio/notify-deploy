@@ -39295,24 +39295,30 @@ const CONSTELLATION_HOST = "http://operations.constellationio.com";
 
 async function run() {
     try {
-        // User-provided inputs
-        const serviceId = core.getInput("serviceId", { required: true });
+        // ── Inputs ────────────────────────────────────────────────────────────
+        // `service` is the logical service NAME as registered in Constellation
+        // (e.g. "payments"). Combined with `environment` and the project the API
+        // key belongs to, it uniquely identifies a service.
+        const service = core.getInput("service", { required: true });
         const environment = core.getInput("environment", { required: true });
-        // Secrets / env
+        // Optional: deployment outcome. Defaults to "success"; pass
+        // ${{ job.status }} with `if: always()` to report failures too.
+        const status = (core.getInput("status") || "success").toUpperCase();
+        // Optional: override the Constellation base URL (self-hosted installs).
+        const apiUrl = core.getInput("api-url") || CONSTELLATION_HOST;
+        // ── Credential ────────────────────────────────────────────────────────
+        // The project's API key (cstl_live_sk_...). Authenticates the webhook and
+        // scopes the deployment to that project.
         const apiKey = process.env.CONSTELLATION_API_KEY;
         if (!apiKey) {
             throw new Error("Missing CONSTELLATION_API_KEY secret");
         }
-        const apiUrl = CONSTELLATION_HOST;
-        // GitHub context
+        // ── GitHub context ────────────────────────────────────────────────────
         const ctx = github.context;
         const payload = {
-            serviceId: serviceId,
+            service,
             environment,
-            type: "DEPLOYMENT",
-            severity: "INFO",
-            status: "SUCCESS",
-            message: `Deployed ${serviceId} to ${environment}`,
+            status,
             source: "github-actions",
             timestamp: new Date().toISOString(),
             metadata: {
@@ -39325,8 +39331,8 @@ async function run() {
                 actor: ctx.actor
             }
         };
-        core.info(`Sending deployment event for ${serviceId} (${environment})`);
-        const response = await fetch(`${apiUrl}/api/v1/events`, {
+        core.info(`Sending deployment event for ${service} (${environment}) — status ${status}`);
+        const response = await fetch(`${apiUrl}/api/v1/webhooks/github`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
